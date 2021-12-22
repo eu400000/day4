@@ -7,15 +7,19 @@
 ;; Dec 2021
 
 (defn puzzlePart1
-  [inputValue]
-)
+  [puzzleData]
+  (let [drawnNumbers (getDrawnNumbers puzzleData)
+        boards (getBingoBoards puzzleData)]
+    (processDrawnNumbers boards drawnNumbers)))
 
 (defn puzzlePart2
   [inputValue])
 
 
 (comment
-  (puzzlePart1 (loadData "resources/puzzleInput.txt"))
+  (puzzlePart1 (loadInputData "resources/puzzleInput.txt"))
+  ;; => 31424
 
-  (puzzlePart2 (loadData "resources/puzzleTestInput.txt"))
+
+  (puzzlePart2 (loadInputData "resources/puzzleTestInput.txt"))
   )
