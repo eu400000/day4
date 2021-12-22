@@ -57,5 +57,10 @@
   (is (= "board2" (checkForBingo boardHitsBingoHor)))
   (is (= "board1" (checkForBingo boardHitsBingoVer))))
 
+(deftest sumOfUnmarkedNumbers-test
+  (is (= 188 (sumOfUnmarkedNumbers {:boardHits '(1 1 1 1 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 1 1 1 0 0 1)
+                                    :boardName "board3"
+                                    :board  '(14 21 17 24 4 10 16 15 9 19 18 8 23 26 20 22 11 13 6 5 2 0 12 3 7)}))))
+
 (deftest processDrawnNumbers-boardData
-  (is (= "board3" (processDrawnNumbers boardData '(7 4 9 5 11 17 23 2 0 14 21 24 10 16 13 6 15 25 12 22 18 20 8 19 3 26 1)))))
+  (is (= 4512 (processDrawnNumbers boardData '(7 4 9 5 11 17 23 2 0 14 21 24 10 16 13 6 15 25 12 22 18 20 8 19 3 26 1)))))

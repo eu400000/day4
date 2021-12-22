@@ -88,15 +88,23 @@
           nil
           (recur (drop 1 currentBoards)))))))
 
+(defn sumOfUnmarkedNumbers
+  [board]
+  (let [boardNumbers (:board board)
+        boardHits (:boardHits board)
+        unmarkedNumbers (map #(if (= %2 0) %1 0) boardNumbers boardHits)]
+    (apply + unmarkedNumbers)
+    ))
 
-  (defn processDrawnNumbers
-    "Assumes there is always a winning board"
-    [boards drawnNumbers]
-    (loop [currentBoards boards
-           remainingNumbers drawnNumbers]
-      (let [bingoBoard (checkForBingo currentBoards)]
-        (if-not (nil? bingoBoard)
-          bingoBoard
-          (recur (updateAllBoardHits currentBoards (first remainingNumbers)) (drop 1 remainingNumbers))))))
+(defn processDrawnNumbers
+  "Assumes there is always a winning board"
+  [boards drawnNumbers]
+  (loop [currentBoards boards
+         remainingNumbers drawnNumbers]
+    (let [updatedBoards (updateAllBoardHits currentBoards (first remainingNumbers))
+          bingoBoard (checkForBingo updatedBoards)]
+      (if-not (nil? bingoBoard)
+        (* (sumOfUnmarkedNumbers (first (filter #(= (:boardName %) bingoBoard) updatedBoards))) (first remainingNumbers))
+        (recur updatedBoards (drop 1 remainingNumbers))))))
 
   
