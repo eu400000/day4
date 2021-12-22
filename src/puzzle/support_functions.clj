@@ -1,6 +1,6 @@
 (ns puzzle.support-functions
   ;; (:require [clojure.string :refer [split]]))
-(:require [clojure.string :as str]))
+  (:require [clojure.string :as str]))
 
 
 (defmacro printvar
@@ -8,7 +8,9 @@
   [a]
   `(println ~(name a) (type ~a) ~a))
 
-(macroexpand '(printvar d))
+(defn pp
+  [inputValues]
+  (clojure.pprint/pprint inputValues))
 
 (defn loadInputData
   [inputFileName]
@@ -36,15 +38,29 @@
   (let [boardDataNoEmptyStrings (remove #(= % "") (rest inputData))
         boardDataIntegers (flatten (map #(convertStringWithIntegerToIntegerList %) boardDataNoEmptyStrings))]
     (loop [boardData boardDataIntegers
-           acc {}
+           acc ()
            id 1]
-
       (if (= (count boardData) 0)
-        acc
-        (recur (drop 25 boardData) (assoc acc (keyword (str "board" id)) (getNextBoard boardData)) (inc id))))))
+        (flatten acc)
+        ;;using into to make the LazySeq from repeat into a PersistentList (faciltates easier unit test)
+        (recur (drop 25 boardData) (list acc (hash-map :boardName (str "board" id) :board (getNextBoard boardData) :boardHits (into () (repeat 25 0)))) (inc id))))))
+        
 
+(defn updateBoardHits
+  "Handles 1 board at a time"
+  [board boardHits drawnNumber]
+  (if (= drawnNumber -1) ;-1 means initiatize boardHits
+    (repeat 25 0)
     
+    
+    (map #(if (= %1 drawnNumber) (inc %2) %2) board boardHits)
+  ))
 
-(comment
+(defn updateAllBoardHits
+  "Handles all boards"
+  [boards drawnNumber]
+  (map #(update % :boardHits (fn [dummy]
+                               (updateBoardHits (:board %) (:boardHits %) drawnNumber)))
+       boards))
 
-)
+
