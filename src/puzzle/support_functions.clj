@@ -76,6 +76,7 @@
         (recur (drop 1 currentHits) (inc column))))))
 
 (defn checkForBingo
+  "Returns the boardName for the first board that has a bingo or nil otherwise"
   [boards]
   (loop [currentBoards boards]
     (let [currentBoard (first currentBoards)
@@ -85,16 +86,17 @@
         (:boardName currentBoard)
         (if (empty? currentBoards)
           nil
-          (recur (drop 1 currentBoards))))))
-)
+          (recur (drop 1 currentBoards)))))))
 
 
   (defn processDrawnNumbers
+    "Assumes there is always a winning board"
     [boards drawnNumbers]
     (loop [currentBoards boards
            remainingNumbers drawnNumbers]
-      ;; (printvar currentBoards)
-      ;; (printvar remainingNumbers)
-      (if (zero? (count remainingNumbers))
-        currentBoards
-        (recur (updateAllBoardHits currentBoards (first remainingNumbers)) (drop 1 remainingNumbers)))))
+      (let [bingoBoard (checkForBingo currentBoards)]
+        (if-not (nil? bingoBoard)
+          bingoBoard
+          (recur (updateAllBoardHits currentBoards (first remainingNumbers)) (drop 1 remainingNumbers))))))
+
+  
