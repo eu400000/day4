@@ -83,10 +83,23 @@
           currentBoardHits (:boardHits currentBoard)]
       (if (or (= (checkForBingoHor currentBoardHits) true)
               (= (checkForBingoVer currentBoardHits) true))
-        (:boardName currentBoard)
+        ;; (:boardName currentBoard)
+        currentBoard
         (if (empty? currentBoards)
           nil
           (recur (drop 1 currentBoards)))))))
+
+(defn checkIfAllBoardsHaveBingo
+  [boards]
+  (loop [currentBoards boards]
+    (let [currentBoard (first currentBoards)]
+      (if-not (= (apply + (:boardHits currentBoard)) 25)
+        false
+        (if (= (count currentBoards) 1)
+          true
+          (recur (drop 1 currentBoards)))
+        ))))
+
 
 (defn sumOfUnmarkedNumbers
   [board]
@@ -104,7 +117,8 @@
     (let [updatedBoards (updateAllBoardHits currentBoards (first remainingNumbers))
           bingoBoard (checkForBingo updatedBoards)]
       (if-not (nil? bingoBoard)
-        (* (sumOfUnmarkedNumbers (first (filter #(= (:boardName %) bingoBoard) updatedBoards))) (first remainingNumbers))
+        ;; (* (sumOfUnmarkedNumbers (first (filter #(= (:boardName %) bingoBoard) updatedBoards))) (first remainingNumbers))
+        (* (sumOfUnmarkedNumbers bingoBoard) (first remainingNumbers))
         (recur updatedBoards (drop 1 remainingNumbers))))))
 
   
