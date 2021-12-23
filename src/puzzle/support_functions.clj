@@ -83,7 +83,6 @@
           currentBoardHits (:boardHits currentBoard)]
       (if (or (= (checkForBingoHor currentBoardHits) true)
               (= (checkForBingoVer currentBoardHits) true))
-        ;; (:boardName currentBoard)
         currentBoard
         (if (empty? currentBoards)
           nil
@@ -93,13 +92,13 @@
   [boards]
   (loop [currentBoards boards]
     (let [currentBoard (first currentBoards)]
-      (if-not (= (apply + (:boardHits currentBoard)) 25)
+      (if-not (or (= (checkForBingoHor (:boardHits currentBoard)) true)
+                  (= (checkForBingoVer (:boardHits currentBoard)) true))
         false
         (if (= (count currentBoards) 1)
           true
           (recur (drop 1 currentBoards)))
         ))))
-
 
 (defn sumOfUnmarkedNumbers
   [board]
@@ -109,16 +108,33 @@
     (apply + unmarkedNumbers)
     ))
 
-(defn processDrawnNumbers
+(defn processDrawnNumbersFirstWin
   "Assumes there is always a winning board"
   [boards drawnNumbers]
   (loop [currentBoards boards
          remainingNumbers drawnNumbers]
-    (let [updatedBoards (updateAllBoardHits currentBoards (first remainingNumbers))
-          bingoBoard (checkForBingo updatedBoards)]
-      (if-not (nil? bingoBoard)
-        ;; (* (sumOfUnmarkedNumbers (first (filter #(= (:boardName %) bingoBoard) updatedBoards))) (first remainingNumbers))
-        (* (sumOfUnmarkedNumbers bingoBoard) (first remainingNumbers))
+        (let [updatedBoards (updateAllBoardHits currentBoards (first remainingNumbers))
+              bingoBoard (checkForBingo updatedBoards)]
+          (if-not (nil? bingoBoard)
+            (* (sumOfUnmarkedNumbers bingoBoard) (first remainingNumbers))
+            (recur updatedBoards (drop 1 remainingNumbers))))))
+
+(defn determineLastBoardToBingo
+  [previousBoards currentBoards]
+  (let [newBingoBoards (map #(if-not (or (= (checkForBingoHor (:boardHits %)) true)
+                                         (= (checkForBingoVer (:boardHits %)) true))
+                               %2
+                               nil)
+                            previousBoards currentBoards)]
+    (last (remove nil? newBingoBoards))))
+
+(defn processDrawnNumbersAllBingo
+  "Assumes there is always an all boards winning situation"
+  [boards drawnNumbers]
+  (loop [currentBoards boards
+         remainingNumbers drawnNumbers]
+    (let [updatedBoards (updateAllBoardHits currentBoards (first remainingNumbers))]
+      (if (checkIfAllBoardsHaveBingo updatedBoards)
+        (* (sumOfUnmarkedNumbers (determineLastBoardToBingo currentBoards updatedBoards)) (first remainingNumbers))
         (recur updatedBoards (drop 1 remainingNumbers))))))
 
-  

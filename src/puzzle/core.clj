@@ -10,10 +10,13 @@
   [puzzleData]
   (let [drawnNumbers (getDrawnNumbers puzzleData)
         boards (getBingoBoards puzzleData)]
-    (processDrawnNumbers boards drawnNumbers)))
+    (processDrawnNumbersFirstWin boards drawnNumbers)))
 
 (defn puzzlePart2
-  [inputValue])
+  [puzzleData]
+  (let [drawnNumbers (getDrawnNumbers puzzleData)
+        boards (getBingoBoards puzzleData)]
+    (processDrawnNumbersAllBingo boards drawnNumbers)))
 
 
 (comment
@@ -21,5 +24,7 @@
   ;; => 31424
 
 
-  (puzzlePart2 (loadInputData "resources/puzzleTestInput.txt"))
+  (puzzlePart2 (loadInputData "resources/puzzleInput.txt"))
+  ;; => 23042
+
   )

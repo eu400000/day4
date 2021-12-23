@@ -8,4 +8,4 @@
   (is (= 4512 (puzzlePart1 puzzleTestData))))
 
 (deftest day3Part2-test
-  (is (= 230 (puzzlePart2 puzzleTestData))))
+  (is (= 1924 (puzzlePart2 puzzleTestData))))
